@@ -17,4 +17,8 @@ Route::middleware([
     })->name('dashboard');
 });
 
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth']);
+
 Route::resource('products', ProductController::class);
