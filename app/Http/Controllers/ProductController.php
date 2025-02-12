@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\ProductUpdated;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -29,16 +30,8 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required',
-            'barcode' => 'required|unique:products',
-            'price' => 'required|numeric',
-            'stock' => 'required|integer'
-        ]);
-
-        Product::create($request->all());
-
-        return redirect()->route('products.index')->with('success', 'Product added!');
+        $product = Product::create($request->all());
+        broadcast(new ProductUpdated($product));
     }
 
     /**
