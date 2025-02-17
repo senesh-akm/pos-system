@@ -17,21 +17,18 @@ class ProductUpdated implements ShouldBroadcast
 
     public $product;
 
-    /**
-     * Create a new event instance.
-     */
     public function __construct(Product $product)
     {
         $this->product = $product;
     }
 
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
-     */
-    public function broadcastOn(): array
+    public function broadcastOn()
     {
-        return ['product-updates'];
+        return new Channel('product-updates');
+    }
+
+    public function broadcastAs()
+    {
+        return 'ProductUpdated';
     }
 }

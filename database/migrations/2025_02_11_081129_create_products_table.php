@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('barcode')->unique();
             $table->decimal('price', 10, 2);
-            $table->integer('stock');
+            $table->enum('stock', ['In Stock', 'Out of Stock']);
             $table->timestamps();
         });
     }
