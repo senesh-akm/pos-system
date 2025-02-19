@@ -26,7 +26,7 @@
                                     <td class="px-4 py-2 border">{{ $product->barcode }}</td>
                                     <td class="px-4 py-2 border">{{ number_format($product->price, 2) }}</td>
                                     <td class="px-4 py-2 border">{{ $product->stock }}</td>
-                                    <td class="px-4 py-2 border flex space-x-2">
+                                    <td class="px-4 py-2 border flex space-x-2 justify-end">
                                         <a href="{{ route('products.edit', $product->id) }}" class="bg-yellow-400 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded">
                                             Edit
                                         </a>

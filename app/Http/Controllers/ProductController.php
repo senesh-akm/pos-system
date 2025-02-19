@@ -11,7 +11,7 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::all();
-        return view('products.index', ['products' => $products]);
+        return view('products.index', compact('products'));
     }
 
     public function create()
@@ -33,25 +33,28 @@ class ProductController extends Controller
         return redirect()->route('products.index')->with('success', 'Product added successfully!');
     }
 
-    public function show(Product $product)
-    {
-        //
-    }
-
     public function edit(Product $product)
     {
-        //
+        return view('products.create', compact('product'));
     }
 
     public function update(Request $request, Product $product)
     {
-        // $product->update($request->all());
-        // broadcast(new ProductUpdated($product));
-        // return response()->json(['message' => 'Product updated successfully!']);
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'barcode' => 'required|string|unique:products,barcode,' . $product->id,
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|in:In Stock,Out of Stock',
+        ]);
+
+        $product->update($request->all());
+
+        return redirect()->route('products.index')->with('success', 'Product updated successfully!');
     }
 
     public function destroy(Product $product)
     {
-        //
+        $product->delete();
+        return redirect()->route('products.index')->with('success', 'Product deleted successfully.');
     }
 }
