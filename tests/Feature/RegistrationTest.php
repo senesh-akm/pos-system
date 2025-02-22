@@ -2,7 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Fortify\Features;
 use Laravel\Jetstream\Jetstream;
 use Tests\TestCase;
@@ -39,15 +42,32 @@ class RegistrationTest extends TestCase
             $this->markTestSkipped('Registration support is not enabled.');
         }
 
+        Storage::fake('public');
+        $file = UploadedFile::fake()->image('profile.jpg');
+
         $response = $this->post('/register', [
             'name' => 'Test User',
             'email' => 'test@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
+            'role' => 'admin',
+            'profile_photo_path' => $file,
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature(),
         ]);
 
+        $user = User::where('email', 'test@example.com')->first();
+        $this->assertNotNull($user);
+
+        $this->actingAs($user);
+
         $this->assertAuthenticated();
+        $this->assertDatabaseHas('users', [
+            'email' => 'test@example.com',
+            'role' => 'admin',
+        ]);
+
+        Storage::disk('public')->assertExists('profile-photos/' . $file->hashName());
+
         $response->assertRedirect(route('dashboard', absolute: false));
     }
 }
