@@ -9,6 +9,18 @@
         <form method="POST" action="{{ route('register') }}">
             @csrf
 
+            <div class="mt-4">
+                <x-label for="profile_photo" value="{{ __('Profile Photo') }}" />
+
+                <div class="mb-3">
+                    <img id="profile-photo-preview" class="w-32 h-32 rounded-full border border-gray-300 hidden" />
+                </div>
+
+                <input id="profile_photo"
+                       class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                       type="file" name="profile_photo" accept="image/*" required onchange="previewImage(event)">
+            </div>
+
             <div>
                 <x-label for="name" value="{{ __('Name') }}" />
                 <x-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
@@ -17,6 +29,16 @@
             <div class="mt-4">
                 <x-label for="email" value="{{ __('Email') }}" />
                 <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
+            </div>
+
+            <div class="mt-4">
+                <x-label for="role" value="{{ __('Role') }}" />
+                <select id="role" name="role" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
+                    <option value="" disabled selected>Select a role</option>
+                    <option value="admin">Admin</option>
+                    <option value="cashier">Cashier</option>
+                    <option value="manager">Manager</option>
+                </select>
             </div>
 
             <div class="mt-4">
@@ -56,5 +78,21 @@
                 </x-button>
             </div>
         </form>
+
+        <script>
+            function previewImage(event) {
+                const input = event.target;
+                const preview = document.getElementById('profile-photo-preview');
+
+                if (input.files && input.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.src = e.target.result;
+                        preview.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+        </script>
     </x-authentication-card>
 </x-guest-layout>
