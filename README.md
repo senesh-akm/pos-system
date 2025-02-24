@@ -7,11 +7,10 @@ A modern and scalable Point of Sale (POS) system built with Laravel 11, featurin
 - **Frontend**: Blade templates
 - **Database**: PostgreSQL
 - **Real-time Features**: Laravel Echo with Pusher
-- **Role Management**: Spatie Permissions
 - **Testing**: PHPUnit + PestPHP (for TDD)
 - **API**: Laravel Sanctum for authentication
 - **Payments**: Stripe / PayPal
-- **Search & Reports**: Laravel Scout with MeiliSearch
+<!-- - **Search & Reports**: Laravel Scout with MeiliSearch -->
 
 ---
 
