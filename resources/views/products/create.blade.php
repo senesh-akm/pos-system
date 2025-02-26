@@ -15,11 +15,22 @@
                     </div>
                 @endif
 
-                <form action="{{ isset($product) ? route('products.update', $product->id) : route('products.store') }}" method="POST" class="bg-white shadow-md rounded-lg p-6">
+                <form action="{{ isset($product) ? route('products.update', $product->id) : route('products.store') }}" method="POST" enctype="multipart/form-data" class="bg-white shadow-md rounded-lg p-6">
                     @csrf
                     @isset($product)
                         @method('PUT')
                     @endisset
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-bold mb-2">Product Image</label>
+                        <input type="file" name="product_image" accept="image/*" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:border-blue-100">
+                        <img id="imagePreview" class="mt-2 hidden max-w-xs" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-bold mb-2">Ref. Number</label>
+                        <input type="text" name="refnumber" id="refnumber" value="{{ old('refnumber', $product->refnumber ?? '') }}" readonly class="w-full border rounded-lg px-3 py-2 bg-gray-100">
+                    </div>
 
                     <div class="mb-4">
                         <label class="block text-gray-700 font-bold mb-2">Product Name</label>
@@ -27,8 +38,18 @@
                     </div>
 
                     <div class="mb-4">
+                        <label class="block text-gray-700 font-bold mb-2">Category</label>
+                        <select name="category_id" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:border-blue-100" required>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}" {{ (old('category_id', $product->category_id ?? '') == $category->id) ? 'selected' : '' }}>{{ $category->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
                         <label class="block text-gray-700 font-bold mb-2">Barcode</label>
-                        <input type="text" name="barcode" value="{{ old('barcode', $product->barcode ?? '') }}" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:border-blue-100" required>
+                        <input type="text" name="barcode" id="barcode" value="{{ old('barcode', $product->barcode ?? '') }}" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:border-blue-100" required>
+                        <svg id="barcodeSvg"></svg>
                     </div>
 
                     <div class="mb-4">
@@ -56,4 +77,35 @@
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let barcodeInput = document.getElementById("barcode");
+            let barcodeSvg = document.getElementById("barcodeSvg");
+            let imageInput = document.querySelector("input[name='product_image']");
+            let imagePreview = document.getElementById("imagePreview");
+
+            barcodeInput.addEventListener("input", function () {
+                if (barcodeInput.value) {
+                    JsBarcode(barcodeSvg, barcodeInput.value, {
+                        format: "CODE128",
+                        displayValue: true
+                    });
+                }
+            });
+
+            imageInput.addEventListener("change", function (event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        imagePreview.src = e.target.result;
+                        imagePreview.classList.remove("hidden");
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+    </script>
 </x-app-layout>
