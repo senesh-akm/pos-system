@@ -14,6 +14,7 @@
                             <tr>
                                 <th class="px-4 py-2 border">Name</th>
                                 <th class="px-4 py-2 border">Barcode</th>
+                                <th class="px-4 py-2 border">Barcode Image</th>
                                 <th class="px-4 py-2 border">Price (LKR)</th>
                                 <th class="px-4 py-2 border">Stock</th>
                                 <th class="px-4 py-2 border">Actions</th>
@@ -24,6 +25,12 @@
                                 <tr class="hover:bg-gray-50">
                                     <td class="px-4 py-2 border">{{ $product->name }}</td>
                                     <td class="px-4 py-2 border">{{ $product->barcode }}</td>
+                                    <td class="px-4 py-2 border">
+                                        <svg id="barcode-{{ $product->id }}"></svg>
+                                        <script>
+                                            JsBarcode("#barcode-{{ $product->id }}", "{{ $product->barcode }}", { format: "CODE128" });
+                                        </script>
+                                    </td>
                                     <td class="px-4 py-2 border">{{ number_format($product->price, 2) }}</td>
                                     <td class="px-4 py-2 border">{{ $product->stock }}</td>
                                     <td class="px-4 py-2 border flex space-x-2 justify-end">
@@ -41,7 +48,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-4 py-2 border text-center text-gray-500">No Product Data</td>
+                                    <td colspan="6" class="px-4 py-2 border text-center text-gray-500">No Product Data</td>
                                 </tr>
                             @endforelse
                         </tbody>
