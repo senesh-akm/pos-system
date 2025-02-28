@@ -42,8 +42,7 @@ class RegistrationTest extends TestCase
             $this->markTestSkipped('Registration support is not enabled.');
         }
 
-        Storage::fake('public');
-        $file = UploadedFile::fake()->image('profile.jpg');
+        $image = UploadedFile::fake()->image('test_user_image.jpg');
 
         $response = $this->post('/register', [
             'name' => 'Test User',
@@ -51,12 +50,12 @@ class RegistrationTest extends TestCase
             'password' => 'password',
             'password_confirmation' => 'password',
             'role' => 'admin',
-            'profile_photo_path' => $file,
+            'profile_photo_path' => $image,
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature(),
         ]);
 
         $user = User::where('email', 'test@example.com')->first();
-        $this->assertNotNull($user);
+        $this->assertNotNull($user->profile_photo_path);
 
         $this->actingAs($user);
 
