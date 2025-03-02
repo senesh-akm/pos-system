@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 // use App\Events\ProductUpdated;
+
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -17,28 +19,16 @@ class ProductController extends Controller
 
     public function create()
     {
-        $lastProduct = Product::latest()->first();
-        $nextNumber = '001';
-
-        if ($lastProduct && preg_match('/POS(\d{6})(\d{3})/', $lastProduct->refnumber, $matches)) {
-            $lastCount = intval($matches[3]); // Extract last two digits
-            $nextNumber = str_pad($lastCount + 1, 3, '0', STR_PAD_LEFT);
-        }
-
-        $today = now();
-        $refNumber = 'POS' . $today->format('ymd') . $nextNumber;
-
-        return view('products.create', compact('refNumber'));
+        return view('products.create', compact('categories'));
     }
 
     public function store(Request $request)
     {
         $validatedData = $request->validate([
             'product_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'refnumber' => 'required|string',
+            'product_code' => 'required|unique:product_code',
             'name' => 'required|string|max:255',
             'category' => 'required|string',
-            'barcode' => 'required|string|max:255|unique:products,barcode',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|string|in:In Stock,Out of Stock',
         ]);
@@ -62,10 +52,9 @@ class ProductController extends Controller
     {
         $request->validate([
             'product_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'refnumber' => 'required|string',
+            'product_code' => 'required|unique:product_code,' . $product->id,
             'name' => 'required|string|max:255',
             'category' => 'required|string',
-            'barcode' => 'required|string|unique:products,barcode,' . $product->id,
             'price' => 'required|numeric|min:0',
             'stock' => 'required|in:In Stock,Out of Stock',
         ]);
