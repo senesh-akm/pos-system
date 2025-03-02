@@ -5,15 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Product extends Model
+class Item extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'product_image',
+        'item_image',
+        'refnumber',
         'product_code',
-        'name',
+        'item_code',
+        'item_name',
         'category',
+        'barcode',
         'price',
         'stock',
     ];
@@ -21,6 +24,11 @@ class Product extends Model
     protected $casts = [
         'price' => 'decimal:2',
     ];
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
 
     public function category()
     {

@@ -17,4 +17,9 @@ class Category extends Model
     {
         return $this->hasMany(Product::class);
     }
+
+    public function item()
+    {
+        return $this->hasMany(Item::class);
+    }
 }
