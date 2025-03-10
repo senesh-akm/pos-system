@@ -2,7 +2,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
-                <h2 class="text-2xl font-bold mb-4">{{ isset($items) ? 'Edit Item' : 'Add Item' }}</h2>
+                <h2 class="text-2xl font-bold mb-4">{{ isset($item) ? 'Edit Item' : 'Add Item' }}</h2>
 
                 @if ($errors->any())
                     <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
@@ -15,7 +15,7 @@
                     </div>
                 @endif
 
-                <form action="{{ isset($items) ? route('items.update', $item->id) : route('items.store') }}" method="POST" enctype="multipart/form-data" class="bg-white shadow-md rounded-lg p-6">
+                <form action="{{ isset($item) ? route('items.update', $item->id) : route('items.store') }}" method="POST" enctype="multipart/form-data" class="bg-white shadow-md rounded-lg p-6">
                     @csrf
                     @isset($item)
                         @method('PUT')
@@ -23,8 +23,13 @@
 
                     <div class="mb-4">
                         <label class="block text-gray-700 font-bold mb-2">Item Image</label>
-                        <input type="file" name="item_image" accept="image/*" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:border-blue-100">
-                        <img id="imagePreview" class="mt-2 hidden max-w-xs" />
+                        <input type="file" name="item_image" accept="image/*" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:border-blue-100" onchange="previewImage(event)">
+
+                        @if(isset($item) && $item->item_image)
+                            <img id="imagePreview" class="mt-2 max-w-xs rounded-lg shadow-lg" src="{{ asset('storage/' . $item->item_image) }}" style="width: 200px; height: 200px;" />
+                        @else
+                            <img id="imagePreview" class="mt-2 hidden max-w-xs rounded-lg shadow-lg" style="width: 200px; height: 200px;" />
+                        @endif
                     </div>
 
                     <div class="mb-4">
@@ -33,20 +38,25 @@
                     </div>
 
                     <div class="mb-4">
-                        <label class="block text-gray-700 font-bold mb-2">Item Name</label>
-                        <input type="text" name="item_name" value="{{ old('item_name', $item->item_name ?? '') }}" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:border-blue-100" required>
-                    </div>
-
-                    <div class="mb-4">
                         <label class="block text-gray-700 font-bold mb-2">Product Code</label>
                         <select name="product_code" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:border-blue-100" required>
                             <option value="" disabled selected>Select Product Code</option>
                             @foreach($products as $product)
                                 <option value="{{ $product->id }}" {{ (old('product_code', $item->product_code ?? '') == $product->id) ? 'selected' : '' }}>
-                                    {{ $product->product_code }} <br> {{ $product->name }}
+                                    {{ $product->product_code }}
                                 </option>
                             @endforeach
                         </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-bold mb-2">Item Code</label>
+                        <input type="text" name="item_code" value="{{ old('item_code', $item->item_code ?? '') }}" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:border-blue-100" required style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-bold mb-2">Item Name</label>
+                        <input type="text" name="item_name" value="{{ old('item_name', $item->item_name ?? '') }}" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:border-blue-100" required>
                     </div>
 
                     <div class="mb-4">
@@ -85,7 +95,7 @@
                             Cancel
                         </a>
                         <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                            {{ isset($items) ? 'Update Item' : 'Save Item' }}
+                            {{ isset($item) ? 'Update Item' : 'Save Item' }}
                         </button>
                     </div>
                 </form>

@@ -19,6 +19,7 @@ class ProductController extends Controller
 
     public function create()
     {
+        $categories = Category::all();
         return view('products.create', compact('categories'));
     }
 
@@ -26,7 +27,7 @@ class ProductController extends Controller
     {
         $validatedData = $request->validate([
             'product_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'product_code' => 'required|unique:product_code',
+            'product_code' => 'required|unique:products,product_code',
             'name' => 'required|string|max:255',
             'category' => 'required|string',
             'price' => 'required|numeric|min:0',
@@ -45,19 +46,22 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        return view('products.create', compact('product'));
+        $categories = Category::all();
+        return view('products.create', compact('product', 'categories'));
     }
 
     public function update(Request $request, Product $product)
     {
         $request->validate([
             'product_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'product_code' => 'required|unique:product_code,' . $product->id,
+            'product_code' => 'required|unique:products,product_code,' . $product->id,
             'name' => 'required|string|max:255',
             'category' => 'required|string',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|in:In Stock,Out of Stock',
         ]);
+
+        $validatedData = $request->only(['product_code', 'name', 'category', 'price', 'stock']);
 
         if ($request->hasFile('product_image')) {
             if ($product->product_image) {
@@ -67,7 +71,7 @@ class ProductController extends Controller
             $validatedData['product_image'] = $imagePath;
         }
 
-        $product->update($request->all());
+        $product->update($validatedData);
 
         return redirect()->route('products.index')->with('success', 'Product updated successfully!');
     }
