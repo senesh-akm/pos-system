@@ -31,7 +31,7 @@ class ItemController extends Controller
 
         $categories = Category::all();
         $products = Product::all();
-        
+
         return view('items.create', compact('refNumber', 'categories', 'products'));
     }
 
@@ -61,7 +61,10 @@ class ItemController extends Controller
 
     public function edit(Item $item)
     {
-        return view('items.create', compact('items', 'products'));
+        $products = Product::all();
+        $categories = Category::all();
+        $refNumber = $item->refnumber;
+        return view('items.create', compact('item', 'products', 'categories', 'refNumber'));
     }
 
     public function update(Request $request, Item $item)
@@ -95,5 +98,23 @@ class ItemController extends Controller
     {
         $item->delete();
         return redirect()->route('items.index')->with('success', 'Item deleted successfully.');
+    }
+
+    public function getProductDetails($id)
+    {
+        $product = Product::find($id);
+
+        if (!$product) {
+            return response()->json(['error' => 'Product not found'], 404);
+        }
+
+        $category = Category::find($product->category_id);
+
+        return response()->json([
+            'product_image' => asset('storage/' . $product->product_image),
+            'category_id' => $category ? $category->id : null,
+            'category' => $category ? $category->name : 'N/A',
+            'price' => $product->price
+        ]);
     }
 }

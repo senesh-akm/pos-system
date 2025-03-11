@@ -2,7 +2,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
-                <h2 class="text-2xl font-bold mb-4">{{ isset($products) ? 'Edit Product' : 'Add Product' }}</h2>
+                <h2 class="text-2xl font-bold mb-4">{{ isset($product) ? 'Edit Product' : 'Add Product' }}</h2>
 
                 @if ($errors->any())
                     <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
@@ -15,7 +15,7 @@
                     </div>
                 @endif
 
-                <form action="{{ isset($products) ? route('products.update', $product->id) : route('products.store') }}" method="POST" enctype="multipart/form-data" class="bg-white shadow-md rounded-lg p-6">
+                <form action="{{ isset($product) ? route('products.update', $product->id) : route('products.store') }}" method="POST" enctype="multipart/form-data" class="bg-white shadow-md rounded-lg p-6">
                     @csrf
                     @isset($product)
                         @method('PUT')
@@ -23,8 +23,13 @@
 
                     <div class="mb-4">
                         <label class="block text-gray-700 font-bold mb-2">Product Image</label>
-                        <input type="file" name="product_image" accept="image/*" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:border-blue-100">
-                        <img id="imagePreview" class="mt-2 hidden max-w-xs rounded-lg shadow-lg" />
+                        <input type="file" name="product_image" accept="image/*" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:border-blue-100" onchange="previewImage(event)">
+
+                        @if(isset($product) && $product->product_image)
+                            <img id="imagePreview" class="mt-2 max-w-xs rounded-lg shadow-lg" src="{{ asset('storage/' . $product->product_image) }}" style="width: 200px; height: 200px;" />
+                        @else
+                            <img id="imagePreview" class="mt-2 hidden max-w-xs rounded-lg shadow-lg" style="width: 200px; height: 200px;" />
+                        @endif
                     </div>
 
                     <div class="mb-4">
@@ -67,7 +72,7 @@
                             Cancel
                         </a>
                         <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                            {{ isset($products) ? 'Update Product' : 'Save Product' }}
+                            {{ isset($product) ? 'Update Product' : 'Save Product' }}
                         </button>
                     </div>
                 </form>
@@ -88,5 +93,15 @@
                 reader.readAsDataURL(file);
             }
         });
+
+        function previewImage(event) {
+            const reader = new FileReader();
+            reader.onload = function(){
+                const output = document.getElementById('imagePreview');
+                output.src = reader.result;
+                output.classList.remove('hidden');
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
     </script>
 </x-app-layout>
